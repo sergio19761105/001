@@ -1,0 +1,263 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora Desembolando Fácil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 50mm;
+            height: 50mm;
+            margin-right: 15px;
+        }
+        .calculator-title {
+            position: relative;
+            color: black;
+            font-size: 12mm;
+            font-family: Arial, sans-serif;
+            display: inline-block;
+            text-align: center;
+        }
+        .calculator-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -3mm;
+            width: 100%;
+            height: 3mm;
+            background: yellow;
+            z-index: -1;
+        }
+        .title-line {
+            display: block;
+            width: 100%;
+        }
+        .buttons {
+            margin: 15px 0;
+        }
+        .buttons button {
+            background: black;
+            color: yellow;
+            border: 2px solid yellow;
+            padding: 8px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .delete-btn {
+            background: none;
+            color: red;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        @media print {
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 100%;
+                padding: 10px;
+            }
+            .header {
+                margin-bottom: 10px;
+            }
+            .logo {
+                width: 30mm;
+                height: 30mm;
+            }
+            .calculator-title {
+                font-size: 8mm;
+            }
+            .buttons, .no-print {
+                display: none !important;
+            }
+            table {
+                page-break-inside: auto;
+                font-size: 3mm;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            th, td {
+                padding: 4px;
+            }
+            input[type="text"], input[type="number"], select {
+                text-align: center;
+                font-size: 3mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="DESEMBOLANDO_FÁCIL__4_-removebg-preview.png" class="logo" alt="Logo">
+            <div class="calculator-title">
+                <span class="title-line">Calculadora Desembolando Fácil</span>
+                <span class="title-line">Versão Serralheria</span>
+            </div>
+        </div>
+        <table id="calculatorTable">
+            <thead>
+                <tr>
+                    <th>Material</th>
+                    <th>Medidas</th>
+                    <th>Número de Peças</th>
+                    <th>Tamanho das Peças (mm)</th>
+                    <th>Número de Barras</th>
+                    <th class="no-print"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="row-0">
+                    <td>
+                        <select onchange="updateMeasuresField(this, 0)">
+                            <option value="">Selecione...</option>
+                            <option value="metalon">Metalon</option>
+                            <option value="barra_chata">Barra Chata</option>
+                            <option value="cantoneira">Cantoneira</option>
+                            <option value="tubo_redondo">Tubo Redondo</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </td>
+                    <td id="measuresCell-0"><input type="text" oninput="calculateBars(0)"></td>
+                    <td><input type="number" oninput="calculateBars(0)"></td>
+                    <td id="sizeCell-0"><input type="number" oninput="calculateBars(0)"></td>
+                    <td><input type="text" id="bars-0" readonly></td>
+                    <td class="no-print"><button class="delete-btn" onclick="confirmDeleteRow(0)">x</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="buttons">
+            <button onclick="addRow()" class="no-print">ADICIONAR CAMPO</button>
+            <button onclick="window.print()" class="no-print">IMPRIMIR</button>
+            <button onclick="window.location.href='https://www.youtube.com/watch?v=iHAsc0Rn1LQ&list=PLAwDu0RqE2RC4o4f6BwTo1GdUW36Ykm4h&pp=gAQB'" class="no-print" style="background: yellow; color: black;">
+                CLIQUE AQUI
+            </button>
+        </div>
+    </div>
+    <script>
+        let rowCount = 1;
+
+        function updateMeasuresField(select, rowId) {
+            const measuresCell = document.getElementById(`measuresCell-${rowId}`);
+            const material = select.value;
+            
+            if (material === 'metalon') {
+                measuresCell.innerHTML = `
+                    <select onchange="calculateBars(${rowId})">
+                        <option value="">Selecione...</option>
+                        <option value="15x15">15 x 15</option>
+                        <option value="20x20">20 x 20</option>
+                        <option value="20x30">20 x 30</option>
+                        <option value="30x30">30 x 30</option>
+                        <option value="30x40">30 x 40</option>
+                        <option value="40x40">40 x 40</option>
+                        <option value="40x50">40 x 50</option>
+                        <option value="50x50">50 x 50</option>
+                    </select>
+                `;
+            } else {
+                measuresCell.innerHTML = `<input type="text" oninput="calculateBars(${rowId})">`;
+            }
+        }
+
+        function calculateBars(rowId) {
+            const row = document.getElementById(`row-${rowId}`);
+            const cells = row.getElementsByTagName('td');
+            const piecesInput = cells[2].querySelector('input');
+            const sizeInput = cells[3].querySelector('input');
+            const barsInput = document.getElementById(`bars-${rowId}`);
+            
+            const pieces = parseFloat(piecesInput?.value || 0);
+            const size = parseFloat(sizeInput?.value || 0);
+            
+            if (pieces > 0 && size > 0) {
+                const total = (pieces * size) / 6000;
+                barsInput.value = total.toFixed(2);
+            } else {
+                barsInput.value = '';
+            }
+        }
+
+        function addRow() {
+            const table = document.getElementById('calculatorTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.id = `row-${rowCount}`;
+            
+            newRow.innerHTML = `
+                <td>
+                    <select onchange="updateMeasuresField(this, ${rowCount})">
+                        <option value="">Selecione...</option>
+                        <option value="metalon">Metalon</option>
+                        <option value="barra_chata">Barra Chata</option>
+                        <option value="cantoneira">Cantoneira</option>
+                        <option value="tubo_redondo">Tubo Redondo</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </td>
+                <td id="measuresCell-${rowCount}"><input type="text" oninput="calculateBars(${rowCount})"></td>
+                <td><input type="number" oninput="calculateBars(${rowCount})"></td>
+                <td id="sizeCell-${rowCount}"><input type="number" oninput="calculateBars(${rowCount})"></td>
+                <td><input type="text" id="bars-${rowCount}" readonly></td>
+                <td class="no-print"><button class="delete-btn" onclick="confirmDeleteRow(${rowCount})">x</button></td>
+            `;
+            
+            rowCount++;
+        }
+
+        function confirmDeleteRow(rowId) {
+            if (confirm('Tem certeza que deseja excluir esta linha?')) {
+                deleteRow(rowId);
+            }
+        }
+
+        function deleteRow(rowId) {
+            const row = document.getElementById(`row-${rowId}`);
+            if (row) {
+                row.remove();
+            }
+        }
+    </script>
+</body>
+</html>
+```
